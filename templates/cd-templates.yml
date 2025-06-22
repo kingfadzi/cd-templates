@@ -16,6 +16,7 @@ variables:
 
 .base_deploy:
   before_script:
+    - 'microdnf install -y sshpass || dnf install -y sshpass'
     - 'export SSHPASS=$(echo "$SSH_PASSWORD" | base64 -d)'
     - 'mkdir -p ~/.ssh'
     - 'ssh-keyscan -H "${DEPLOY_SERVER}" >> ~/.ssh/known_hosts'
