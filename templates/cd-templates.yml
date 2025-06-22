@@ -17,7 +17,6 @@ variables:
 .base_deploy:
   before_script:
     - 'export SSHPASS=$(echo "$SSH_PASSWORD" | base64 -d)'
-    - 'echo "Using password: $SSH_PASSWORD"'
     - 'mkdir -p .ssh'
     - 'ssh-keyscan -H "${DEPLOY_SERVER}" >> .ssh/known_hosts'
     - 'export SSH_OPTS="-o UserKnownHostsFile=$(pwd)/.ssh/known_hosts -o StrictHostKeyChecking=no"'
@@ -36,7 +35,7 @@ variables:
     - .base_deploy
   stage: deploy
   script:
-    - 'ci-templates/scripts/prepare_release_dir.sh'
+    - 'cd-templates/scripts/prepare_release_dir.sh'
   artifacts:
     paths:
       - release_timestamp.txt
@@ -48,7 +47,7 @@ variables:
   needs:
     - prepare_release_dir
   script:
-    - 'ci-templates/scripts/upload_code.sh'
+    - 'cd-templates/scripts/upload_code.sh'
 
 .extract_and_link_template:
   extends:
@@ -58,4 +57,4 @@ variables:
     - prepare_release_dir
     - upload_code
   script:
-    - 'ci-templates/scripts/extract_and_link.sh'
+    - 'cd-templates/scripts/extract_and_link.sh'
