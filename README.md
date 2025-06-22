@@ -1,4 +1,4 @@
-# cd-templates
+# ci-templates
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://eros.butterflycluster.com/experiments/cd-templates.git
+git remote add origin https://eros.butterflycluster.com/experiments/ci-templates.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://eros.butterflycluster.com/experiments/cd-templates/-/settings/integrations)
+- [ ] [Set up project integrations](https://eros.butterflycluster.com/experiments/ci-templates/-/settings/integrations)
 
 ## Collaborate with your team
 

@@ -1,0 +1,61 @@
+# cd-templates.yml
+variables:
+  # Base paths for every app
+  DEPLOY_BASE_PATH: "/apps/data/${APP_NAME}"
+  RELEASES_DIR: "${DEPLOY_BASE_PATH}/releases"
+  CURRENT_LINK: "${DEPLOY_BASE_PATH}/current"
+
+  # Timestamp for the release folder
+  DEPLOY_TIMESTAMP: '$(date +%Y%m%d_%H%M%S)'
+
+  # Standard backup command
+  BACKUP_CMD: >
+    mkdir -p ${DEPLOY_BASE_PATH}/backups &&
+    tar --ignore-failed-read -czf "${DEPLOY_BASE_PATH}/backups/backup-${DEPLOY_TIMESTAMP}.tgz" \
+      -C ${CURRENT_LINK} . || [ \$? -eq 1 ]
+
+.base_deploy:
+  before_script:
+    - 'export SSHPASS=$(echo "$SSH_PASSWORD" | base64 -d)'
+    - 'echo "Using password: $SSH_PASSWORD"'
+    - 'mkdir -p .ssh'
+    - 'ssh-keyscan -H "${DEPLOY_SERVER}" >> .ssh/known_hosts'
+    - 'export SSH_OPTS="-o UserKnownHostsFile=$(pwd)/.ssh/known_hosts -o StrictHostKeyChecking=no"'
+    - 'git clone --depth=1 --branch development https://eros.butterflycluster.com/experiments/cd-templates.git cd-templates'
+    - 'chmod +x cd-templates/scripts/*.sh'
+
+.ssh_script_template:
+  extends:
+    - .base_deploy
+  script:
+    - 'echo "Running command: $COMMAND"'
+    - 'sshpass -e ssh ${SSH_OPTS} ${DEPLOY_USER}@${DEPLOY_SERVER} "$COMMAND"'
+
+.prepare_release_dir_template:
+  extends:
+    - .base_deploy
+  stage: deploy
+  script:
+    - 'ci-templates/scripts/prepare_release_dir.sh'
+  artifacts:
+    paths:
+      - release_timestamp.txt
+
+.upload_code_template:
+  extends:
+    - .base_deploy
+  stage: deploy
+  needs:
+    - prepare_release_dir
+  script:
+    - 'ci-templates/scripts/upload_code.sh'
+
+.extract_and_link_template:
+  extends:
+    - .base_deploy
+  stage: deploy
+  needs:
+    - prepare_release_dir
+    - upload_code
+  script:
+    - 'ci-templates/scripts/extract_and_link.sh'
