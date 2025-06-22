@@ -20,9 +20,7 @@ variables:
     - 'mkdir -p ~/.ssh'
     - 'ssh-keyscan -H "${DEPLOY_SERVER}" >> ~/.ssh/known_hosts'
     - 'export SSH_OPTS="-o UserKnownHostsFile=$(pwd)/.ssh/known_hosts -o StrictHostKeyChecking=no"'
-    - 'git clone --depth=1 --branch development \
-      "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/experiments/cd-templates.git" \
-      cd-templates'
+    - 'git clone --depth=1 --branch development https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/experiments/cd-templates.git cd-templates'
     - 'chmod +x cd-templates/scripts/*.sh'
 
 .ssh_script_template:
